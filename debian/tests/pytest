@@ -1,0 +1,19 @@
+#!/bin/sh
+
+set -e
+cd "$AUTOPKGTEST_TMP"
+
+TEST_KEYWORDS="not test_child_raises_parent_exits_cleanly and \
+not test_error_capture and \
+not test_multithreaded_parallel_termination_resource_tracker_silent and \
+not test_nested_exception_dispatch and \
+not test_nested_loop_error_in_grandchild_resource_tracker_silent and \
+not test_parallel_with_interactively_defined_functions_default_backend and \
+not test_permission_error_windows_memmap_sent_to_parent and \
+not test_resource_tracker_silent_when_reference_cycles and \
+not test_threadpool_limitation_in_child_override"
+
+for py in $(py3versions -s); do
+	echo "Testing with $py:"
+	$py -m pytest -v -k "${TEST_KEYWORDS}" --pyargs joblib
+done

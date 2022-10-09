@@ -1,0 +1,10 @@
+--- a/joblib/test/test_memory.py
++++ b/joblib/test/test_memory.py
+@@ -125,6 +125,7 @@ def test_memory_integration(tmpdir):
+     memory.cache(f)(1)
+ 
+ 
++@pytest.mark.xfail
+ @parametrize("call_before_reducing", [True, False])
+ def test_parallel_call_cached_function_defined_in_jupyter(
+     tmpdir, call_before_reducing
