@@ -145,7 +145,7 @@ arrays::
     >>> cachedir2 = 'your_cachedir2_location'
     >>> memory2 = Memory(cachedir2, mmap_mode='r')
     >>> square = memory2.cache(np.square)
-    >>> a = np.vander(np.arange(3)).astype(np.float)
+    >>> a = np.vander(np.arange(3)).astype(float)
     >>> square(a)
     ________________________________________________________________________________
     [Memory] Calling square...
@@ -385,6 +385,15 @@ Gotchas
      ``self.method`` does not depend on ``self`` you can use
      ``self.method = memory.cache(self.method, ignore=['self'])``.
 
+* **joblib cache entries may be invalidated after environment updates**.
+  Values returned by ``joblib.hash`` are not guaranteed to stay
+  constant across ``joblib`` versions. This means that **all** entries of a
+  ``joblib.Memory`` cache can get invalidated when upgrading ``joblib``.
+  Invalidation can also happen when upgrading a third party library (such as
+  ``numpy``): in such a case, only the cached function calls with parameters
+  that are constructs (or contain references to constructs) defined in the
+  upgraded library should potentially be invalidated after the upgrade.
+
 
 Ignoring some arguments
 -----------------------
@@ -418,7 +427,7 @@ objects that, in addition of behaving like normal functions, expose
 methods useful for cache exploration and management.
 
 .. autoclass:: MemorizedFunc
-    :members: __init__, call, clear
+    :members: __init__, call, clear, check_call_in_cache
 
 
 ..

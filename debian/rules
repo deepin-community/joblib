@@ -1,6 +1,16 @@
 #!/usr/bin/make -f
 # -*- makefile -*-
 
+EXCLUDE_TESTS =
+# Until https://github.com/joblib/joblib/issues/1273 is open
+EXCLUDE_TESTS += not test_nested_loop_error_in_grandchild_resource_tracker_silent
+# Until https://github.com/joblib/joblib/issues/1328 is open
+EXCLUDE_TESTS += and not test_resource_tracker_silent_when_reference_cycles
+# Until https://github.com/joblib/joblib/issues/1329 is open
+EXCLUDE_TESTS += and not test_parallel_with_interactively_defined_functions_default_backend
+
+export PYBUILD_TEST_ARGS_python3 := -k "$(EXCLUDE_TESTS)"
+
 %:
 	dh $@ --buildsystem=pybuild --with=python3
 

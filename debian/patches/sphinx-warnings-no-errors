@@ -1,0 +1,14 @@
+--- a/doc/Makefile
++++ b/doc/Makefile
+@@ -6,9 +6,9 @@
+ 
+ all: html
+ 
+-# generate html documentation with warning as errors
++# generate html documentation with warning not errors
+ html:
+-	$(SPHINXBUILD) -W -b html . ./_build/html/
++	$(SPHINXBUILD) -b html . ./_build/html/
+ 
+ # remove generated sphinx gallery examples and sphinx documentation
+ clean:

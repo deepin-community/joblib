@@ -1,0 +1,11 @@
+--- a/doc/conf.py
++++ b/doc/conf.py
+@@ -49,7 +49,7 @@
+     'default_thumb_file': '_static/joblib_logo_examples.png',
+     'doc_module': 'joblib',
+     'filename_pattern': '',
+-    'ignore_pattern': 'utils.py',
++    'ignore_pattern': r'utils.py|compressors_comparison.py|distributed_backend_simple.py',
+     'backreferences_dir': os.path.join('generated'),
+     'reference_url': {
+         'joblib': None}

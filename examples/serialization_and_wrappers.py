@@ -36,7 +36,7 @@ print(Parallel(n_jobs=2)(delayed(func_async)(21) for _ in range(1))[0])
 
 
 ###############################################################################
-# For most use-cases, using ``cloudpickle``` is efficient enough. However, this
+# For most use-cases, using ``cloudpickle`` is efficient enough. However, this
 # solution can be very slow to serialize large python objects, such as dict or
 # list, compared to the standard ``pickle`` serialization.
 #
@@ -78,7 +78,7 @@ if sys.platform != 'win32':
 # POSIX specification and can have bad interaction with compiled extensions
 # that use ``openmp``. Also, it is not possible to start processes with
 # ``fork`` on windows where only ``spawn`` is available. The ``loky`` backend
-# has been developped to mitigate these issues.
+# has been developed to mitigate these issues.
 #
 # To have fast pickling with ``loky``, it is possible to rely on ``pickle`` to
 # serialize all communications between the main process and the workers with

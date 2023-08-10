@@ -12,11 +12,13 @@ from .parallel import AutoBatchingMixin, ParallelBackendBase, BatchedCalls
 from .parallel import parallel_backend
 
 try:
+    import dask
     import distributed
 except ImportError:
+    dask = None
     distributed = None
 
-if distributed is not None:
+if dask is not None and distributed is not None:
     from dask.utils import funcname, itemgetter
     from dask.sizeof import sizeof
     from dask.distributed import (
@@ -24,9 +26,11 @@ if distributed is not None:
         as_completed,
         get_client,
         secede,
-        rejoin
+        rejoin,
+        get_worker
     )
     from distributed.utils import thread_state
+
 
     try:
         # asyncio.TimeoutError, Python3-only error thrown by recent versions of
@@ -51,7 +55,7 @@ class _WeakKeyDictionary:
     such as large numpy arrays or pandas dataframes that are not hashable and
     therefore cannot be used as keys of traditional python dicts.
 
-    Futhermore using a dict with id(array) as key is not safe because the
+    Furthermore using a dict with id(array) as key is not safe because the
     Python is likely to reuse id of recently collected arrays.
     """
 
@@ -272,7 +276,7 @@ class DaskDistributedBackend(AutoBatchingMixin, ParallelBackendBase):
                 f = self.data_futures.get(arg_id, None)
                 if f is None and call_data_futures is not None:
                     try:
-                        f = call_data_futures[arg]
+                        f = await call_data_futures[arg]
                     except KeyError:
                         pass
                     if f is None:
@@ -286,12 +290,19 @@ class DaskDistributedBackend(AutoBatchingMixin, ParallelBackendBase):
                             # calling client.scatter inside a dask worker)
                             # using hash=True often raise CancelledError,
                             # see dask/distributed#3703
-                            [f] = await self.client.scatter(
-                                [arg],
+                            _coro = self.client.scatter(
+                                arg,
                                 asynchronous=True,
                                 hash=False
                             )
-                            call_data_futures[arg] = f
+                            # Centralize the scattering of identical arguments
+                            # between concurrent apply_async callbacks by
+                            # exposing the running coroutine in
+                            # call_data_futures before it completes.
+                            t = asyncio.Task(_coro)
+                            call_data_futures[arg] = t
+
+                            f = await t
 
                 if f is not None:
                     out.append(f)

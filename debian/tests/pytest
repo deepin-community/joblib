@@ -1,6 +1,6 @@
 #!/bin/sh
 
-set -e
+set -ex
 cd "$AUTOPKGTEST_TMP"
 
 TEST_KEYWORDS="not test_child_raises_parent_exits_cleanly and \

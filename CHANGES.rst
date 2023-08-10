@@ -1,8 +1,90 @@
 Latest changes
 ==============
 
-In development
+Release 1.2.0
+-------------
+
+- Fix a security issue where ``eval(pre_dispatch)`` could potentially run
+  arbitrary code. Now only basic numerics are supported.
+  https://github.com/joblib/joblib/pull/1327
+
+- Make sure that joblib works even when multiprocessing is not available,
+  for instance with Pyodide
+  https://github.com/joblib/joblib/pull/1256
+
+- Avoid unnecessary warnings when workers and main process delete
+  the temporary memmap folder contents concurrently.
+  https://github.com/joblib/joblib/pull/1263
+
+- Vendor loky 3.1.0 with several fixes to more robustly forcibly terminate
+  worker processes in case of a crash.
+  https://github.com/joblib/joblib/pull/1269
+
+- Fix memory alignment bug for pickles containing numpy arrays.
+  This is especially important when loading the pickle with
+  ``mmap_mode != None`` as the resulting ``numpy.memmap`` object
+  would not be able to correct the misalignment without performing
+  a memory copy.
+  This bug would cause invalid computation and segmentation faults
+  with native code that would directly access the underlying data
+  buffer of a numpy array, for instance C/C++/Cython code compiled
+  with older GCC versions or some old OpenBLAS written in platform
+  specific assembly.
+  https://github.com/joblib/joblib/pull/1254
+
+- Vendor cloudpickle 2.2.0 which adds support for PyPy 3.8+.
+
+- Vendor loky 3.3.0 which fixes a bug with leaking processes in case of
+  nested loky parallel calls and more reliability spawn the correct
+  number of reusable workers.
+
+Release 1.1.0
 --------------
+
+- Fix byte order inconsistency issue during deserialization using joblib.load
+  in cross-endian environment: the numpy arrays are now always loaded to
+  use the system byte order, independently of the byte order of the system
+  that serialized the pickle.
+  https://github.com/joblib/joblib/pull/1181
+
+- Fix joblib.Memory bug with the ``ignore`` parameter when the cached function
+  is a decorated function.
+  https://github.com/joblib/joblib/pull/1165
+
+- Fix `joblib.Memory` to properly handle caching for functions defined
+  interactively in a IPython session or in Jupyter notebook cell.
+  https://github.com/joblib/joblib/pull/1214
+
+- Update vendored loky (from version 2.9 to 3.0) and cloudpickle (from
+  version 1.6 to 2.0)
+  https://github.com/joblib/joblib/pull/1218
+
+Release 1.0.1
+-------------
+
+- Add check_call_in_cache method to check cache without calling function.
+  https://github.com/joblib/joblib/pull/820
+ 
+- dask: avoid redundant scattering of large arguments to make a more
+  efficient use of the network resources and avoid crashing dask with
+  "OSError: [Errno 55] No buffer space available"
+  or "ConnectionResetError: [Errno 104] connection reset by peer".
+  https://github.com/joblib/joblib/pull/1133
+
+Release 1.0.0
+-------------
+
+- Make `joblib.hash` and `joblib.Memory` caching system compatible with `numpy
+  >= 1.20.0`. Also make it explicit in the documentation that users should now
+  expect to have their `joblib.Memory` cache invalidated when either `joblib`
+  or a third party library involved in the cached values definition is
+  upgraded.  In particular, users updating `joblib` to a release that includes
+  this fix will see their previous cache invalidated if they contained
+  reference to `numpy` objects. 
+  https://github.com/joblib/joblib/pull/1136
+
+- Remove deprecated `check_pickle` argument in `delayed`.
+  https://github.com/joblib/joblib/pull/903
 
 Release 0.17.0
 --------------
@@ -224,7 +306,7 @@ Maxime Weyl
 Maxime Weyl
 
     Loading a corrupted cached file with mmap mode enabled would
-    recompute the results and return them without memmory mapping.
+    recompute the results and return them without memory mapping.
 
 
 Release 0.12.3
@@ -308,8 +390,8 @@ Thomas Moreau
 
     Implement the ``'loky'`` backend with @ogrisel. This backend relies on
     a robust implementation of ``concurrent.futures.ProcessPoolExecutor``
-    with spawned processes that can be reused accross the ``Parallel``
-    calls. This fixes the bad interation with third paty libraries relying on
+    with spawned processes that can be reused across the ``Parallel``
+    calls. This fixes the bad integration with third paty libraries relying on
     thread pools, described in https://pythonhosted.org/joblib/parallel.html#bad-interaction-of-multiprocessing-and-third-party-libraries
 
     Limit the number of threads used in worker processes by C-libraries that
@@ -369,7 +451,7 @@ Alexandre Abadie
 
     Add ``register_compressor`` function for extending available compressors.
 
-    Allow passing a string to ``compress`` parameter in ``dump`` funtion. This
+    Allow passing a string to ``compress`` parameter in ``dump`` function. This
     string should correspond to the compressor used (e.g. zlib, gzip, lz4,
     etc). The default compression level is used in this case.
 
@@ -419,7 +501,7 @@ Loïc Estève
 Loïc Estève
 
     Fix handling of memmap objects with offsets greater than
-    mmap.ALLOCATIONGRANULARITY in ``joblib.Parrallel``. See
+    mmap.ALLOCATIONGRANULARITY in ``joblib.Parallel``. See
     https://github.com/joblib/joblib/issues/451 for more details.
 
 Loïc Estève
@@ -835,7 +917,7 @@ Release 0.6.5
 2012-09-15
 Yannick Schwartz
 
-    BUG: make sure that sets and dictionnaries give reproducible hashes
+    BUG: make sure that sets and dictionaries give reproducible hashes
 
 
 2012-07-18
@@ -866,7 +948,7 @@ GaelVaroquaux
 
     BUG: non-reproducible hashing: order of kwargs
 
-    The ordering of a dictionnary is random. As a result the function hashing
+    The ordering of a dictionary is random. As a result the function hashing
     was not reproducible. Pretty hard to test
 
 Release 0.6.3
@@ -1018,7 +1100,7 @@ Release 0.5.3
 2011-06-25
 Gael varoquaux
 
-   API: All the usefull symbols in the __init__
+   API: All the useful symbols in the __init__
 
 
 Release 0.5.2
@@ -1176,7 +1258,7 @@ Gael varoquaux
 Gael varoquaux
 2010-07-29
 
-    MISC: Silence tests (and hopefuly Yaroslav :P)
+    MISC: Silence tests (and hopefully Yaroslav :P)
 
 Release 0.4.3
 ----------------
