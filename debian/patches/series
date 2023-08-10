@@ -1,4 +1,6 @@
-deb_xfail_test_nested_parallelism_limit
-deb_collect_ignore_setup
+memmap-byte-order
+exclude-dask-example
+sphinx-warnings-no-errors
+sphinx-doc-no-download
+intersphinx-inventory
 deb_test_memory
-big-endian.patch

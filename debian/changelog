@@ -1,3 +1,52 @@
+joblib (1.2.0-4) unstable; urgency=medium
+
+  * Team upload.
+  * Revert test skipping, add endianness related patch
+
+ -- Chiara Marmo <marmochiaskl@gmail.com>  Sat, 22 Oct 2022 10:49:54 +0530
+
+joblib (1.2.0-3) unstable; urgency=medium
+
+  * Team Upload.
+  * Skip s390x failing tests in autopkgtest as well, add
+    in more verbosity to test with "-x" arg
+
+ -- Nilesh Patra <nilesh@debian.org>  Wed, 12 Oct 2022 19:02:57 +0000
+
+joblib (1.2.0-2) unstable; urgency=medium
+
+  * Team upload.
+  * Skip test related to pickle and architecture endianness
+
+ -- Chiara Marmo <marmochiaskl@gmail.com>  Wed, 12 Oct 2022 10:50:00 +0530
+
+joblib (1.2.0-1) unstable; urgency=medium
+
+  * Team upload.
+  * Update upstream version (Closes: #1020820)
+  * Refresh patches
+
+ -- Chiara Marmo <marmochiaskl@gmail.com>  Sun, 09 Oct 2022 14:09:39 +0530
+
+joblib (1.1.0-2) unstable; urgency=medium
+
+  * Team upload.
+  * Transition from experimental -> unstable
+    (Closes: #1002356, #999527)
+
+ -- Nilesh Patra <nilesh@debian.org>  Sat, 16 Jul 2022 20:58:55 +0530
+
+joblib (1.1.0-1) experimental; urgency=medium
+
+  * Team Upload.
+
+  [Chiara Marmo]
+  * Update upstream version.
+  * Update standard version.
+  * Clean patches.
+
+ -- Chiara Marmo <marmochiaskl@gmail.com>  Wed, 25 May 2022 12:16:00 +0530
+
 joblib (0.17.0-4) unstable; urgency=medium
 
   * Team upload

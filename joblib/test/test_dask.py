@@ -1,5 +1,6 @@
 from __future__ import print_function, division, absolute_import
 import os
+import warnings
 
 import pytest
 from random import random
@@ -11,6 +12,7 @@ from ..parallel import ThreadingBackend, AutoBatchingMixin
 from .._dask import DaskDistributedBackend
 
 distributed = pytest.importorskip('distributed')
+dask = pytest.importorskip('dask')
 from distributed import Client, LocalCluster, get_client
 from distributed.metrics import time
 from distributed.utils_test import cluster, inc
@@ -114,7 +116,7 @@ def test_dask_funcname(loop, mixed):
 
 def test_no_undesired_distributed_cache_hit(loop):
     # Dask has a pickle cache for callables that are called many times. Because
-    # the dask backends used to wrapp both the functions and the arguments
+    # the dask backends used to wrap both the functions and the arguments
     # under instances of the Batch callable class this caching mechanism could
     # lead to bugs as described in: https://github.com/joblib/joblib/pull/1055
     # The joblib-dask backend has been refactored to avoid bundling the
@@ -127,7 +129,9 @@ def test_no_undesired_distributed_cache_hit(loop):
     np = pytest.importorskip('numpy')
     X = np.arange(int(1e6))
 
-    def isolated_operation(list_, X=None):
+    def isolated_operation(list_, data=None):
+        if data is not None:
+            np.testing.assert_array_equal(data, X)
         list_.append(uuid4().hex)
         return list_
 
@@ -155,7 +159,7 @@ def test_no_undesired_distributed_cache_hit(loop):
             # Append a large array which will be scattered by dask, and
             # dispatch joblib._dask.Batch
             res = Parallel()(
-                delayed(isolated_operation)(list_, X=X) for list_ in lists
+                delayed(isolated_operation)(list_, data=X) for list_ in lists
             )
 
         # This time, auto-scattering should have kicked it.
@@ -220,14 +224,17 @@ def test_manual_scatter(loop):
     assert z.count in (4, 6)
 
 
-def test_auto_scatter(loop):
+# When the same IOLoop is used for multiple clients in a row, use
+# loop_in_thread instead of loop to prevent the Client from closing it.  See
+# dask/distributed #4112
+def test_auto_scatter(loop_in_thread):
     np = pytest.importorskip('numpy')
     data1 = np.ones(int(1e4), dtype=np.uint8)
     data2 = np.ones(int(1e4), dtype=np.uint8)
     data_to_process = ([data1] * 3) + ([data2] * 3)
 
     with cluster() as (s, [a, b]):
-        with Client(s['address'], loop=loop) as client:
+        with Client(s['address'], loop=loop_in_thread) as client:
             with parallel_backend('dask') as (ba, _):
                 # Passing the same data as arg and kwarg triggers a single
                 # scatter operation whose result is reused.
@@ -237,11 +244,10 @@ def test_auto_scatter(loop):
             # broadcast=1 which means that one worker must directly receive
             # the data from the scatter operation once.
             counts = count_events('receive-from-scatter', client)
-            # assert counts[a['address']] + counts[b['address']] == 2
-            assert 2 <= counts[a['address']] + counts[b['address']] <= 4
+            assert counts[a['address']] + counts[b['address']] == 2
 
     with cluster() as (s, [a, b]):
-        with Client(s['address'], loop=loop) as client:
+        with Client(s['address'], loop=loop_in_thread) as client:
             with parallel_backend('dask') as (ba, _):
                 Parallel()(delayed(noop)(data1[:3], i) for i in range(5))
             # Small arrays are passed within the task definition without going
@@ -281,14 +287,14 @@ def test_nested_scatter(loop, retry_no):
                 )
 
 
-def test_nested_backend_context_manager(loop):
+def test_nested_backend_context_manager(loop_in_thread):
     def get_nested_pids():
         pids = set(Parallel(n_jobs=2)(delayed(os.getpid)() for _ in range(2)))
         pids |= set(Parallel(n_jobs=2)(delayed(os.getpid)() for _ in range(2)))
         return pids
 
     with cluster() as (s, [a, b]):
-        with Client(s['address'], loop=loop) as client:
+        with Client(s['address'], loop=loop_in_thread) as client:
             with parallel_backend('dask') as (ba, _):
                 pid_groups = Parallel(n_jobs=2)(
                     delayed(get_nested_pids)()
@@ -298,7 +304,7 @@ def test_nested_backend_context_manager(loop):
                     assert len(set(pid_group)) <= 2
 
         # No deadlocks
-        with Client(s['address'], loop=loop) as client:  # noqa: F841
+        with Client(s['address'], loop=loop_in_thread) as client:  # noqa: F841
             with parallel_backend('dask') as (ba, _):
                 pid_groups = Parallel(n_jobs=2)(
                     delayed(get_nested_pids)()
@@ -458,3 +464,28 @@ def test_wait_for_workers_timeout():
     finally:
         client.close()
         cluster.close()
+
+
+@pytest.mark.parametrize("backend", ["loky", "multiprocessing"])
+def test_joblib_warning_inside_dask_daemonic_worker(backend):
+    cluster = LocalCluster(n_workers=2)
+    client = Client(cluster)
+
+    def func_using_joblib_parallel():
+        # Somehow trying to check the warning type here (e.g. with
+        # pytest.warns(UserWarning)) make the test hang. Work-around: return
+        # the warning record to the client and the warning check is done
+        # client-side.
+        with warnings.catch_warnings(record=True) as record:
+            Parallel(n_jobs=2, backend=backend)(
+                delayed(inc)(i) for i in range(10))
+
+        return record
+
+    fut = client.submit(func_using_joblib_parallel)
+    record = fut.result()
+
+    assert len(record) == 1
+    warning = record[0].message
+    assert isinstance(warning, UserWarning)
+    assert "distributed.worker.daemon" in str(warning)
