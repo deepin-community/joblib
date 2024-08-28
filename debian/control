@@ -8,14 +8,15 @@ Build-Depends: debhelper-compat (= 13),
                dh-python,
                python3-all,
                python3-setuptools,
-               python3-pytest,
+               pybuild-plugin-pyproject,
+               python3-pytest <!nocheck>,
                python3-numpy,
                python3-psutil,
                python3-lz4,
                python3-threadpoolctl <!nocheck>,
                cython3,
                procps
-Standards-Version: 4.6.1
+Standards-Version: 4.6.2
 Vcs-Browser: https://salsa.debian.org/science-team/joblib
 Vcs-Git: https://salsa.debian.org/science-team/joblib.git
 Homepage: https://github.com/joblib/joblib

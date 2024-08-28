@@ -1,6 +1,7 @@
-memmap-byte-order
+pytest8
 exclude-dask-example
-sphinx-warnings-no-errors
 sphinx-doc-no-download
 intersphinx-inventory
 deb_test_memory
+dont-count-DeprecationWarnings.patch
+no-ast.Num.patch

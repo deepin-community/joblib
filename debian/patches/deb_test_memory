@@ -1,6 +1,6 @@
 --- a/joblib/test/test_memory.py
 +++ b/joblib/test/test_memory.py
-@@ -125,7 +125,7 @@
+@@ -126,7 +126,7 @@
      memory = Memory(location=tmpdir.strpath, verbose=0)
      memory.cache(f)(1)
  

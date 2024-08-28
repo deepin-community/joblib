@@ -8,6 +8,6 @@
 +    raise IOError('Debian Policy Section 4.9 prohibits network access during build')
 +
 +
- url = ("https://archive.ics.uci.edu/ml/machine-learning-databases/"
-        "kddcup99-mld/kddcup.data.gz")
+ url = "https://github.com/joblib/dataset/raw/main/kddcup.data.gz"
  names = ("duration, protocol_type, service, flag, src_bytes, "
+          "dst_bytes, land, wrong_fragment, urgent, hot, "
