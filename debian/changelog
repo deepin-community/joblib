@@ -1,3 +1,27 @@
+joblib (1.3.2-2) unstable; urgency=medium
+
+  * Team upload
+  * d/patches/pytest8: small adjustment for Pytest 8.x. Closes: #1063966
+  * d/control: switch to PEP-517 building.
+  * Standards-Version: 4.6.2 (routine-update)
+  * Set upstream metadata fields: Bug-Database, Bug-Submit, Repository,
+    Repository-Browse.
+
+ -- Michael R. Crusoe <crusoe@debian.org>  Wed, 06 Mar 2024 10:14:32 +0100
+
+joblib (1.3.2-1) unstable; urgency=medium
+
+  * Team upload
+  * New upstream release
+  * Drop patches memmap-byte-order and sphinx-warnings-no-errors,
+    included upstream
+  * Refresh remaining patches
+  * Add conftest.py to debian/clean to avoid build-time test failure
+  * New patches dont-count-DeprecationWarnings.patch and
+    no-ast.Num.patch to avoid test failure with Python 3.12
+
+ -- Graham Inggs <ginggs@debian.org>  Tue, 28 Nov 2023 14:14:41 +0000
+
 joblib (1.2.0-4) unstable; urgency=medium
 
   * Team upload.

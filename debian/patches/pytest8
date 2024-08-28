@@ -1,0 +1,24 @@
+From: Michael R. Crusoe <crusoe@debian.org>
+Subject: Add pytest 8.x compatability
+
+Works with Pytest 7.x+
+--- joblib.orig/joblib/test/test_parallel.py
++++ joblib/joblib/test/test_parallel.py
+@@ -1802,7 +1802,7 @@
+     # Skip this test if numpy is not linked to a BLAS library
+     parent_info = _check_numpy_threadpool_limits()
+     if len(parent_info) == 0:
+-        pytest.skip(msg="Need a version of numpy linked to BLAS")
++        pytest.skip(reason="Need a version of numpy linked to BLAS")
+ 
+     workers_threadpool_infos = Parallel(backend="loky", n_jobs=n_jobs)(
+         delayed(_check_numpy_threadpool_limits)() for i in range(2))
+@@ -1828,7 +1828,7 @@
+     # Skip this test if numpy is not linked to a BLAS library
+     parent_info = _check_numpy_threadpool_limits()
+     if len(parent_info) == 0:
+-        pytest.skip(msg="Need a version of numpy linked to BLAS")
++        pytest.skip(reason="Need a version of numpy linked to BLAS")
+ 
+     with context('loky', inner_max_num_threads=inner_max_num_threads):
+         workers_threadpool_infos = Parallel(n_jobs=n_jobs)(
