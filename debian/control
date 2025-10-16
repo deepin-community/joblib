@@ -1,37 +1,53 @@
 Source: joblib
 Maintainer: Debian Science Maintainers <debian-science-maintainers@lists.alioth.debian.org>
-Uploaders: Yaroslav Halchenko <debian@onerussian.com>
+Uploaders:
+ Yaroslav Halchenko <debian@onerussian.com>,
 Section: python
 Testsuite: autopkgtest-pkg-python
 Priority: optional
-Build-Depends: debhelper-compat (= 13),
-               dh-python,
-               python3-all,
-               python3-setuptools,
-               pybuild-plugin-pyproject,
-               python3-pytest <!nocheck>,
-               python3-numpy,
-               python3-psutil,
-               python3-lz4,
-               python3-threadpoolctl <!nocheck>,
-               cython3,
-               procps
-Standards-Version: 4.6.2
+Build-Depends:
+ debhelper-compat (= 13),
+ dh-sequence-python3,
+ cython3,
+ procps,
+ pybuild-plugin-pyproject,
+ python3-all,
+ python3-lz4,
+ python3-numpy,
+ python3-psutil,
+ python3-pytest <!nocheck>,
+ python3-pytest-asyncio <!nocheck>,
+ python3-setuptools,
+ python3-threadpoolctl <!nocheck>,
+Build-Depends-Indep:
+ dh-sequence-sphinxdoc,
+ python-distributed-doc,
+ python-numpy-doc,
+ python-scipy-doc,
+ python3-doc,
+ python3-numpydoc,
+ python3-pandas,
+ python3-sphinx,
+ python3-sphinx-autodoc-typehints,
+ python3-sphinx-gallery,
+Standards-Version: 4.7.2
 Vcs-Browser: https://salsa.debian.org/science-team/joblib
 Vcs-Git: https://salsa.debian.org/science-team/joblib.git
 Homepage: https://github.com/joblib/joblib
-Rules-Requires-Root: no
+X-Style: black
 
 Package: python3-joblib
 Architecture: all
-Depends: ${python3:Depends},
-         ${misc:Depends},
-         procps,
-         python3-pkg-resources
-Recommends: python3-numpy,
-            python3-pytest,
-            python3-simplejson,
-            python3-psutil
+Depends:
+ procps,
+ ${misc:Depends},
+ ${python3:Depends},
+Recommends:
+ python3-numpy,
+ python3-psutil,
+ python3-pytest,
+Suggests:
+ python-joblib-doc,
 Description: tools to provide lightweight pipelining in Python
  Joblib is a set of tools to provide lightweight pipelining in
  Python. In particular, joblib offers:
@@ -45,3 +61,29 @@ Description: tools to provide lightweight pipelining in Python
  long-running functions and has specific optimizations for numpy arrays.
  .
  This package contains the Python 3 version.
+
+Package: python-joblib-doc
+Section: doc
+Architecture: all
+Multi-Arch: foreign
+Depends:
+ ${misc:Depends},
+ ${sphinxdoc:Depends},
+Suggests:
+ python-numpy-doc,
+ python-scipy-doc,
+ python3-doc,
+ python3-joblib,
+Description: tools to provide lightweight pipelining in Python -- docs
+ Joblib is a set of tools to provide lightweight pipelining in
+ Python. In particular, joblib offers:
+ .
+  - transparent disk-caching of the output values and lazy
+    re-evaluation (memoize pattern)
+  - easy simple parallel computing
+  - logging and tracing of the execution
+ .
+ Joblib is optimized to be fast and robust in particular on large,
+ long-running functions and has specific optimizations for numpy arrays.
+ .
+ This package contains the documentation for joblib.

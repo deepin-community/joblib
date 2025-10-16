@@ -1,3 +1,13 @@
-Tests: pytest
-Depends: python3-joblib, python3-pytest, python3-numpy, python3-psutil, python3-lz4, python3-threadpoolctl, python3-all
-Restrictions: allow-stderr
+Tests:
+ pytest,
+Depends:
+ python3-all,
+ python3-joblib,
+ python3-lz4,
+ python3-numpy,
+ python3-psutil,
+ python3-pytest,
+ python3-pytest-asyncio,
+ python3-threadpoolctl,
+Restrictions:
+ allow-stderr,

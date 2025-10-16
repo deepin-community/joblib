@@ -1,0 +1,116 @@
+From: tommoral <thomas.moreau.2010@gmail.com>
+Subject: MTN vendor loky 3.5.2
+Bug-Debian: http://bugs.debian.org/1101852
+Forwarded: https://github.com/joblib/joblib/issues/1708
+Origin: vendor, https://github.com/joblib/joblib/pull/1711
+Last-Update: 2025-05-03
+
+[zeha@debian.org: dropped hunks not applying cleanly to loky 3.4.1]
+
+---
+ joblib/externals/loky/__init__.py             |  2 +-
+ .../loky/backend/popen_loky_posix.py          |  2 +-
+ .../loky/backend/resource_tracker.py          | 11 ++++++++++
+ joblib/externals/loky/backend/spawn.py        | 22 +++++++------------
+ joblib/externals/loky/cloudpickle_wrapper.py  |  2 +-
+ 5 files changed, 22 insertions(+), 17 deletions(-)
+
+--- a/joblib/externals/loky/backend/popen_loky_posix.py
++++ b/joblib/externals/loky/backend/popen_loky_posix.py
+@@ -120,7 +120,7 @@
+             reduction._mk_inheritable(tracker_fd)
+             self._fds += [child_r, child_w, tracker_fd]
+             if sys.version_info >= (3, 8) and os.name == "posix":
+-                mp_tracker_fd = prep_data["mp_tracker_args"]["fd"]
++                mp_tracker_fd = prep_data["mp_tracker_fd"]
+                 self.duplicate_for_child(mp_tracker_fd)
+ 
+             from .fork_exec import fork_exec
+--- a/joblib/externals/loky/backend/resource_tracker.py
++++ b/joblib/externals/loky/backend/resource_tracker.py
+@@ -197,6 +197,17 @@
+         nbytes = os.write(self._fd, msg)
+         assert nbytes == len(msg)
+ 
++    def __del__(self):
++        # ignore error due to trying to clean up child process which has already been
++        # shutdown on windows See https://github.com/joblib/loky/pull/450
++        # This is only required if __del__ is defined
++        if not hasattr(ResourceTracker, "__del__"):
++            return
++        try:
++            super().__del__()
++        except ChildProcessError:
++            pass
++
+ 
+ _resource_tracker = ResourceTracker()
+ ensure_running = _resource_tracker.ensure_running
+--- a/joblib/externals/loky/backend/spawn.py
++++ b/joblib/externals/loky/backend/spawn.py
+@@ -82,11 +82,10 @@
+     from .resource_tracker import _resource_tracker
+ 
+     _resource_tracker.ensure_running()
+-    d["tracker_args"] = {"pid": _resource_tracker._pid}
+     if sys.platform == "win32":
+-        d["tracker_args"]["fh"] = msvcrt.get_osfhandle(_resource_tracker._fd)
++        d["tracker_fd"] = msvcrt.get_osfhandle(_resource_tracker._fd)
+     else:
+-        d["tracker_args"]["fd"] = _resource_tracker._fd
++        d["tracker_fd"] = _resource_tracker._fd
+ 
+     if sys.version_info >= (3, 8) and os.name == "posix":
+         # joblib/loky#242: allow loky processes to retrieve the resource
+@@ -105,10 +104,7 @@
+         # process is created (othewise the child won't be able to use it if it
+         # is created later on)
+         mp_resource_tracker.ensure_running()
+-        d["mp_tracker_args"] = {
+-            "fd": mp_resource_tracker._fd,
+-            "pid": mp_resource_tracker._pid,
+-        }
++        d["mp_tracker_fd"] = mp_resource_tracker._fd
+ 
+     # Figure out whether to initialise main in the subprocess as a module
+     # or through direct execution (or to leave it alone entirely)
+@@ -172,23 +168,21 @@
+     if "orig_dir" in data:
+         process.ORIGINAL_DIR = data["orig_dir"]
+ 
+-    if "mp_tracker_args" in data:
++    if "mp_tracker_fd" in data:
+         from multiprocessing.resource_tracker import (
+             _resource_tracker as mp_resource_tracker,
+         )
+ 
+-        mp_resource_tracker._fd = data["mp_tracker_args"]["fd"]
+-        mp_resource_tracker._pid = data["mp_tracker_args"]["pid"]
+-    if "tracker_args" in data:
++        mp_resource_tracker._fd = data["mp_tracker_fd"]
++    if "tracker_fd" in data:
+         from .resource_tracker import _resource_tracker
+ 
+-        _resource_tracker._pid = data["tracker_args"]["pid"]
+         if sys.platform == "win32":
+-            handle = data["tracker_args"]["fh"]
++            handle = data["tracker_fd"]
+             handle = duplicate(handle, source_process=parent_sentinel)
+             _resource_tracker._fd = msvcrt.open_osfhandle(handle, os.O_RDONLY)
+         else:
+-            _resource_tracker._fd = data["tracker_args"]["fd"]
++            _resource_tracker._fd = data["tracker_fd"]
+ 
+     if "init_main_from_name" in data:
+         _fixup_main_from_name(data["init_main_from_name"])
+--- a/joblib/externals/loky/cloudpickle_wrapper.py
++++ b/joblib/externals/loky/cloudpickle_wrapper.py
+@@ -54,7 +54,7 @@
+             **{
+                 k: _wrap_objects_when_needed(v)
+                 for k, v in obj.keywords.items()
+-            }
++            },
+         )
+     if callable(obj):
+         # Need wrap if the object is a function defined in a local scope of

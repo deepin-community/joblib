@@ -1,7 +1,9 @@
-pytest8
+no-distutils
 exclude-dask-example
 sphinx-doc-no-download
 intersphinx-inventory
 deb_test_memory
 dont-count-DeprecationWarnings.patch
-no-ast.Num.patch
+privacy
+1d9b65db31bfe79c42801d795ea9ebfec1123c44.patch
+mtn-vendor-loky.patch

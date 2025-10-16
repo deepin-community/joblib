@@ -1,3 +1,7 @@
+From: Matthias Klose <doko@debian.org>
+Description: Mark the test_parallel_call_cached_function_defined_in_jupyter test as failing
+Date: Mon, 19 Oct 2020 11:05:06 +0200
+
 --- a/joblib/test/test_memory.py
 +++ b/joblib/test/test_memory.py
 @@ -126,7 +126,7 @@
