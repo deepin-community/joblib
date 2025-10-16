@@ -47,7 +47,7 @@ aggregation, as illustrated in
 
 Future releases are planned to also support returning a generator that yields
 the results in the order of completion rather than the order of submission, by
-using ``return_as="unordered_generator"`` instead of ``return_as="generator"``.
+using ``return_as="generator_unordered"`` instead of ``return_as="generator"``.
 In this case the order of the outputs will depend on the concurrency of workers
 and will not be guaranteed to be deterministic, meaning the results can be
 yielded with a different order every time the code is executed.
@@ -69,7 +69,7 @@ of Python processes as concurrent workers. For instance this is the case
 if you write the CPU intensive part of your code inside a `with nogil`_
 block of a Cython function.
 
-.. _`with nogil`: http://docs.cython.org/src/userguide/external_C_code.html#acquiring-and-releasing-the-gil
+.. _`with nogil`: https://docs.cython.org/src/userguide/external_C_code.html#acquiring-and-releasing-the-gil
 
 To hint that your code can efficiently use threads, just pass
 ``prefer="threads"`` as parameter of the :class:`joblib.Parallel` constructor.
@@ -260,7 +260,7 @@ The backend factory can be any callable that returns an instance of
 ``ParallelBackendBase``. Please refer to the `default backends source code`_ as
 a reference if you want to implement your own custom backend.
 
-.. _`default backends source code`: https://github.com/joblib/joblib/blob/master/joblib/_parallel_backends.py
+.. _`default backends source code`: https://github.com/joblib/joblib/blob/main/joblib/_parallel_backends.py
 
 Note that it is possible to register a backend class that has some mandatory
 constructor parameters such as the network address and connection credentials

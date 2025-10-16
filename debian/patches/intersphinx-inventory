@@ -1,16 +1,23 @@
---- a/doc/conf.py
-+++ b/doc/conf.py
-@@ -38,10 +38,9 @@
+Author: Chiara Marmo <marmochiaskl@gmail.com>
+Description: Link against the packaged docs, not the remote sites
+Date:   Thu Sep 8 06:54:57 2022 +0000
+Forwarded: not-needed
+
+--- joblib.orig/doc/conf.py
++++ joblib/doc/conf.py
+@@ -37,11 +37,10 @@
+ 
  # intersphinx configuration
  intersphinx_mapping = {
-     'python': ('https://docs.python.org/{.major}'.format(
+-    'python': ('https://docs.python.org/{.major}'.format(
 -        sys.version_info), None),
 -    'numpy': ('https://numpy.org/doc/stable/', None),
 -    'scipy': ('https://docs.scipy.org/doc/scipy', None),
 -    'distributed': ('https://distributed.dask.org/en/latest/', None),
-+        sys.version_info), '/usr/share/doc/python3/html/objects.inv'),
-+    'numpy': ('https://numpy.org/doc/stable/', '/usr/share/doc/python-numpy-doc/html/objects.inv'),
-+    'scipy': ('https://docs.scipy.org/doc/scipy', '/usr/share/doc/python-scipy-doc/html/objects.inv'),
++    'python': ('/usr/share/doc/python3/html/', None),
++    'numpy': ('/usr/share/doc/python-numpy/html/', None),
++    'scipy': ('/usr/share/doc/python-scipy-doc/html/', None),
++    'distributed': ('/usr/share/doc/python3-distributed/html/', None),
  }
  
  # sphinx-gallery configuration

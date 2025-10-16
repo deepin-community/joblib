@@ -9,10 +9,25 @@ EXCLUDE_TESTS += and not test_resource_tracker_silent_when_reference_cycles
 # Until https://github.com/joblib/joblib/issues/1329 is open
 EXCLUDE_TESTS += and not test_parallel_with_interactively_defined_functions_default_backend
 
-export PYBUILD_TEST_ARGS_python3 := -k "$(EXCLUDE_TESTS)"
+# https://github.com/joblib/joblib/issues/1618
+ifeq ($(shell nproc), 1)
+  EXCLUDE_TESTS += and not test_nested_parallelism_limit
+  EXCLUDE_TESTS += and not test_threadpool_limitation_in_child_override
+endif
+
+# This failled on buildd x86-grnet-03 but not on Salsa
+EXCLUDE_TESTS += and not test_joblib_pickle_across_python_versions
+
+export PYBUILD_NAME=joblib
+export PYBUILD_TEST_ARGS := -k "$(EXCLUDE_TESTS)" --confcutdir=.
+export PYBUILD_BEFORE_TEST=cp -v debian/conftest.py {build_dir}
+export PYBUILD_AFTER_TEST=rm -v {build_dir}/conftest.py
 
 %:
-	dh $@ --buildsystem=pybuild --with=python3
+	dh $@ --buildsystem=pybuild
 
 override_dh_installchangelogs:
 	dh_installchangelogs CHANGES.rst
+
+execute_after_dh_auto_build-indep:
+	SPHINXOPTS="$(SPHINXOPTS)" pybuild --build -i python3 -s custom --build-args '$(MAKE) -C {dir}/doc html'

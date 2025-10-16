@@ -1,3 +1,87 @@
+joblib (1.4.2-5) unstable; urgency=medium
+
+  * Team upload.
+  * Add build-dep on python3-pytest-asyncio for Pytest8.4
+
+ -- Alexandre Detiste <tchet@debian.org>  Wed, 27 Aug 2025 12:04:17 +0200
+
+joblib (1.4.2-4) unstable; urgency=medium
+
+  * Team upload.
+  [ Chris Hofstaedtler ]
+  * Apply upstream patch to fix test failures. Closes: #1101852.
+  [ Santiago Vila ]
+  * Add debian/salsa-ci.yml (without reprotest for now).
+  * Update standards-version.
+
+ -- Santiago Vila <sanvila@debian.org>  Sat, 03 May 2025 19:50:00 +0200
+
+joblib (1.4.2-3) unstable; urgency=medium
+
+  * Team upload.
+  * Also disable test_joblib_pickle_across_python_versions in autopkgtests
+    (Closes: #1098247)
+
+ -- Alexandre Detiste <tchet@debian.org>  Sun, 23 Feb 2025 14:55:07 +0100
+
+joblib (1.4.2-2) unstable; urgency=medium
+
+  * Team upload.
+  * Exclude one test that only fails on buildd
+
+ -- Alexandre Detiste <tchet@debian.org>  Fri, 14 Feb 2025 16:23:56 +0100
+
+joblib (1.4.2-1) unstable; urgency=medium
+
+  * Team upload.
+  * Reformat d/control with debputy
+  * New upstream version 1.4.2 (Closes: #1095024)
+  * Refresh patches, two were applied upstream
+  * Add upstream commit for Numpy 2.2 compatibility
+
+ -- Alexandre Detiste <tchet@debian.org>  Fri, 14 Feb 2025 12:28:26 +0100
+
+joblib (1.3.2-6) unstable; urgency=medium
+
+  * Team upload.
+  * Remove dep on python3-pkg-resources (Closes: #1083444)
+  * Remove recommends on python3-simplejson
+  * Remove Py2 vs Py3 crumb from d/rules
+
+ -- Alexandre Detiste <tchet@debian.org>  Sun, 19 Jan 2025 14:37:18 +0100
+
+joblib (1.3.2-5) unstable; urgency=medium
+
+  * Team upload.
+  * Let dh_auto_test execute the tests automatically. Closes: #1085691.
+  * If the build machine has a single CPU, exclude tests which are
+    known to fail. Closes: #1085692.
+
+ -- Santiago Vila <sanvila@debian.org>  Mon, 04 Nov 2024 17:30:00 +0100
+
+joblib (1.3.2-4) unstable; urgency=high
+
+  * Team upload.
+  * Source-only upload for migration to testing.
+
+ -- Santiago Vila <sanvila@debian.org>  Thu, 17 Oct 2024 14:45:00 +0200
+
+joblib (1.3.2-3) unstable; urgency=medium
+
+  * Team upload.
+  * d/patches/pytest8: forwarded patch upstream.
+  * Adjust intersphinx-inventory patch to link against the packaged
+    docs, not external websites. Also fix link to the docs in the
+    "distributed" package.
+  * Build the docs as a new binary package: python-joblib-doc. Closes: #959991
+  * Added lintian override documenting the origin of the test pickle
+    datafiles.
+  * Updated some of the patch metadata
+  * Added patch to remove last usage of distutils
+  * Standards-Version: 4.7.0 (routine-update)
+
+ -- Michael R. Crusoe <crusoe@debian.org>  Sat, 14 Sep 2024 18:05:38 +0200
+
 joblib (1.3.2-2) unstable; urgency=medium
 
   * Team upload

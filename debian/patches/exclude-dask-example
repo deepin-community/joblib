@@ -1,3 +1,6 @@
+Author: Chiara Marmo <marmochiaskl@gmail.com>
+Description: Exclude flaky test.
+Date: Thu Sep 8 06:54:57 2022 +0000
 --- a/doc/conf.py
 +++ b/doc/conf.py
 @@ -49,7 +49,7 @@

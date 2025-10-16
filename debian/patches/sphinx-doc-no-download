@@ -1,3 +1,7 @@
+Author: Chiara Marmo <marmochiaskl@gmail.com>
+Date:   Thu Sep 8 06:54:57 2022 +0000
+Description: prevent network access while building the docs
+
 --- a/examples/compressors_comparison.py
 +++ b/examples/compressors_comparison.py
 @@ -25,6 +25,10 @@

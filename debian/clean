@@ -1,2 +1,6 @@
 joblib.egg-info/
-conftest.py
+doc/CHANGES.rst
+doc/README.rst
+doc/_build/html/
+doc/auto_examples/
+doc/generated/
